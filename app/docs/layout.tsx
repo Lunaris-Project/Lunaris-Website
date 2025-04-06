@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Terminal, Github, X } from "lucide-react"
+import { Menu, Terminal, Github, X, ArrowUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { DocsSidebar } from "@/components/sidebar"
@@ -12,6 +12,42 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { SearchBar } from "@/components/search"
+
+function ScrollTopButton() {
+  const [visible, setVisible] = useState(false)
+  
+  useEffect(() => {
+    const toggleVisibility = () => {
+      // Show button after scrolling past first section (roughly 600px)
+      const scrolled = document.documentElement.scrollTop > 600
+      setVisible(scrolled)
+    }
+    
+    window.addEventListener('scroll', toggleVisibility)
+    return () => window.removeEventListener('scroll', toggleVisibility)
+  }, [])
+  
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+  
+  if (!visible) return null
+  
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      className="fixed bottom-8 right-8 z-50 rounded-full h-12 w-12 bg-background/80 backdrop-blur border shadow-md hover:translate-y-[-2px] transition-transform"
+      onClick={scrollToTop}
+      aria-label="Scroll to top"
+    >
+      <ArrowUp className="h-5 w-5" />
+    </Button>
+  )
+}
 
 export default function DocsLayout({
   children,
@@ -32,7 +68,7 @@ export default function DocsLayout({
   }
 
   return (
-    <div className="flex  flex-col">
+    <div className="flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 max-w-screen-xl items-center mx-auto px-4">
           <div className="mr-4 hidden md:flex items-center">
@@ -133,8 +169,11 @@ export default function DocsLayout({
         </div>
       </div>
 
-      <footer className=" justify-center items-center  mx-auto py-12 bg-background md:pl-[max(240px,calc(50%-45rem+240px))] lg:pl-[max(240px,calc(50%-45rem+240px))] lg:pr-[max(240px,calc(50%-45rem+240px))]">
-        <div className=" border-t pt-12 container px-4 grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-screen-xl mx-auto">
+      {/* Scroll to top button */}
+      <ScrollTopButton />
+
+      <footer className="justify-center items-center mx-auto py-12 bg-background md:pl-[max(240px,calc(50%-45rem+240px))] lg:pl-[max(240px,calc(50%-45rem+240px))] lg:pr-[max(240px,calc(50%-45rem+240px))]">
+        <div className="border-t pt-12 container px-4 grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-screen-xl mx-auto">
           <div>
             <div className="flex items-center gap-2 font-bold">
               <Terminal className="h-5 w-5 text-primary" />

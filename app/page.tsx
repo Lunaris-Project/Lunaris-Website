@@ -14,74 +14,6 @@ import Cta from "@/components/sections/Cta";
 import Footer from "@/components/sections/Footer";
 
 // useLenis hook to demonstrate Lenis programmatic scrolling control
-function useLenis() {
-  useEffect(() => {
-    // This function will run on the client side only
-    const handleScrollToTop = () => {
-      // Get the global Lenis instance from window
-      const lenis = (window as any).lenis;
-      if (lenis) {
-        lenis.scrollTo(0, {
-          duration: 3.5, // Even slower scroll (3.5 seconds)
-          easing: (t: number) => 1 - Math.pow(1 - t, 3), // Cubic ease out for smooth deceleration
-          immediate: false, // Allow smooth animation
-        });
-      }
-    };
-
-    // Add button to control scroll
-    const addScrollButton = () => {
-      const existingButton = document.getElementById('slow-scroll-top');
-      if (!existingButton) {
-        const button = document.createElement('button');
-        button.id = 'slow-scroll-top';
-        button.innerHTML = '↑';
-        button.style.position = 'fixed';
-        button.style.bottom = '20px';
-        button.style.right = '20px';
-        button.style.zIndex = '9999';
-        button.style.padding = '10px 15px';
-        button.style.borderRadius = '8px';
-        button.style.background = 'rgba(0, 0, 0, 0.7)';
-        button.style.color = 'white';
-        button.style.border = 'none';
-        button.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-        button.style.cursor = 'pointer';
-        button.style.fontFamily = 'system-ui, sans-serif';
-        button.style.fontSize = '14px';
-        button.style.fontWeight = '500';
-        button.style.transition = 'all 0.2s ease';
-        
-        // Hover state
-        button.addEventListener('mouseenter', () => {
-          button.style.background = 'rgba(0, 0, 0, 0.9)';
-          button.style.transform = 'translateY(-2px)';
-        });
-        
-        button.addEventListener('mouseleave', () => {
-          button.style.background = 'rgba(0, 0, 0, 0.7)';
-          button.style.transform = 'translateY(0)';
-        });
-        
-        button.addEventListener('click', handleScrollToTop);
-        document.body.appendChild(button);
-      }
-    };
-
-    // Run after slight delay to ensure Lenis is initialized
-    setTimeout(addScrollButton, 1000);
-
-    return () => {
-      const button = document.getElementById('slow-scroll-top');
-      if (button) {
-        button.removeEventListener('click', handleScrollToTop);
-        button.remove();
-      }
-    };
-  }, []);
-
-  return null;
-}
 
 // Home component is the main page component
 export default function Home() {
@@ -128,8 +60,7 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Add Lenis controller
-  useLenis();
+
 
   // If not mounted, return null
   if (!mounted) return null;
