@@ -96,11 +96,22 @@ export default function HyprlandCustomizationPage() {
         </p>
         <div className="w-full overflow-x-auto">
           <CodeBlock
-            code={`# Source external configuration files
-source = ~/.config/hypr/animations.conf    # Animation settings
-source = ~/.config/hypr/keybinds.conf      # Keyboard shortcuts
-source = ~/.config/hypr/windowrules.conf   # Window-specific rules
-source = ~/.config/hypr/autostart.conf     # Startup applications`}
+            code={`# Colors
+source=~/.cache/ags/user/generated/colors.conf
+# User preferences
+source=~/.config/hypr/hyprland/userPref.conf
+# Other
+source=~/.config/hypr/hyprland/animations/Lunaric.conf # There is more UK right ?
+source=~/.config/hypr/hyprland/misc/default.conf
+source=~/.config/hypr/hyprland/layouts/default.conf
+source=~/.config/hypr/hyprland/keybinds/default.conf
+source=~/.config/hypr/hyprland/input/default.conf
+source=~/.config/hypr/hyprland/decorations/default.conf
+source=~/.config/hypr/hyprland/env/nvidia.conf
+source=~/.config/hypr/hyprland/exec/default.conf
+source=~/.config/hypr/hyprland/monitors/default.conf
+source=~/.config/hypr/hyprland/plugins/default.conf
+source=~/.config/hypr/hyprland/rules/default.conf`}
             filename=".config/hypr/hyprland.conf"
             showLineNumbers={true}
           />
@@ -115,24 +126,30 @@ source = ~/.config/hypr/autostart.conf     # Startup applications`}
           General Settings
         </h2>
         <p className="w-full">
-          The general section controls the overall behavior of Hyprland:
+          The general layouts section controls the overall behavior of Hyprland:
         </p>
         <div className="w-full overflow-x-auto">
           <CodeBlock
             code={`general {
-    gaps_in = 2                   # Gap size between windows
-    gaps_out = 8                  # Gap size between windows and screen edges
-    border_size = 2               # Window border thickness
-    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg  # Gradient border for active window
-    col.inactive_border = rgba(595959aa)  # Border color for inactive windows
-    
-    layout = dwindle             # Default layout (dwindle or master)
-    
-    # Settings for system behavior
-    allow_tearing = false        # Controls screen tearing
-    resize_on_border = true      # Allow resizing windows by dragging borders
+    # Gaps and border
+    gaps_in = 10
+    gaps_out = 10
+    gaps_workspaces = 0
+    border_size = 0
+    # Border colors // dont touch because it controlled by matugena
+    col.active_border = $primary $secondary_container
+    col.inactive_border = $surface $secondary_container
+    resize_on_border = true
+    layout = dwindle
+
+}
+
+dwindle {
+	preserve_split = true
+	smart_split = false
+	smart_resizing = false
 }`}
-            filename=".config/hypr/hyprland.conf"
+            filename=".config/hypr/hyprland/layouts/default.conf"
             showLineNumbers={true}
           />
         </div>
@@ -148,44 +165,29 @@ source = ~/.config/hypr/autostart.conf     # Startup applications`}
         <div className="w-full overflow-x-auto">
           <CodeBlock
             code={`input {
-    kb_layout = us               # Keyboard layout
-    kb_options = caps:escape     # Remap Caps Lock to Escape
-    
-    follow_mouse = 1             # Focus follows mouse
-    float_switch_override_focus = 1  # Focus behavior for floating windows
-    
+    kb_layout = us,ara
+    kb_options = grp:alt_shift_toggle
+    numlock_by_default = true
+    repeat_delay = 300
+    repeat_rate = 35
     touchpad {
-        natural_scroll = true    # Natural scrolling (like on macOS)
-        disable_while_typing = true  # Disable touchpad while typing
-        tap-to-click = true      # Enable tap to click
+        natural_scroll = yes
+        disable_while_typing = true
+        clickfinger_behavior = true
+        scroll_factor = 0.5
     }
-    
-    sensitivity = 0.0            # Mouse sensitivity (-1.0 to 1.0)
-}`}
-            filename=".config/hypr/hyprland.conf"
-            showLineNumbers={true}
-          />
-        </div>
-      </div>
+    special_fallthrough = true
+    follow_mouse = 1
+}
 
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 space-y-4">
-        <h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight" id="gestures">
-          Gesture Settings
-        </h2>
-        <p className="w-full">
-          Hyprland supports touchpad gestures for intuitive navigation:
-        </p>
-        <div className="w-full overflow-x-auto">
-          <CodeBlock
-            code={`gestures {
-    workspace_swipe = true        # Enable swiping between workspaces
-    workspace_swipe_fingers = 3   # Number of fingers for workspace swipe
-    workspace_swipe_distance = 300  # Swipe distance required
-    workspace_swipe_invert = false  # Invert swipe direction
-    workspace_swipe_min_speed_to_force = 30  # Minimum speed for forced swipe
-    workspace_swipe_cancel_ratio = 0.5  # Cancellation threshold
-}`}
-            filename=".config/hypr/hyprland.conf"
+binds {
+    scroll_event_delay = 0
+    }
+
+gestures {
+    workspace_swipe = true
+    }`}
+            filename=".config/hypr/hyprland/input/default.conf"
             showLineNumbers={true}
           />
         </div>
@@ -201,39 +203,37 @@ source = ~/.config/hypr/autostart.conf     # Startup applications`}
         <div className="w-full overflow-x-auto">
           <CodeBlock
             code={`misc {
-    force_default_wallpaper = 0     # Disable default wallpaper
-    disable_hyprland_logo = true    # Hide Hyprland logo
-    disable_splash_rendering = true # Disable splash screen
-    
-    mouse_move_enables_dpms = true  # Wake on mouse movement
-    key_press_enables_dpms = true   # Wake on key press
-    
-    animate_manual_resizes = true   # Animations for manual resizing
-    animate_mouse_windowdragging = true  # Animations when dragging windows
-    
-    enable_swallow = true           # Window swallowing (terminal behavior)
-    swallow_regex = ^(foot)$        # Only swallow foot terminal
-}`}
-            filename=".config/hypr/hyprland.conf"
-            showLineNumbers={true}
-          />
-        </div>
-      </div>
+    vfr = 0
+    vrr = 0
+    font_family = Geist
+    animate_manual_resizes = false
+    animate_mouse_windowdragging = false
+    enable_swallow = false
+    swallow_regex = (foot|kitty|allacritty|Alacritty|ghostty|Ghostty)
+    focus_on_activate = true # Test
+    render_ahead_of_time = true
+    render_ahead_safezone = 30
+    # disable_scale_checks = true
+    disable_hyprland_logo = true
+    force_default_wallpaper = 0
+    # new_window_takes_over_fullscreen = 2
+    allow_session_lock_restore = true
+    initial_workspace_tracking = true
+}
 
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 space-y-4">
-        <h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight" id="binds">
-          Binding Settings
-        </h2>
-        <p className="w-full">
-          Control how keybindings work:
-        </p>
-        <div className="w-full overflow-x-auto">
-          <CodeBlock
-            code={`binds {
-    workspace_back_and_forth = true  # Toggle between current and previous workspace
-    allow_workspace_cycles = true    # Allow cycling through workspaces
+
+xwayland {
+  force_zero_scaling = true
+}
+
+# render {
+#     explicit_sync = 0
+#     explicit_sync_kms = 0
+# }
+cursor {
+    sync_gsettings_theme = true
 }`}
-            filename=".config/hypr/hyprland.conf"
+            filename=".config/hypr/hyprland/misc/default.conf"
             showLineNumbers={true}
           />
         </div>
@@ -248,14 +248,20 @@ source = ~/.config/hypr/autostart.conf     # Startup applications`}
         </p>
         <div className="w-full overflow-x-auto">
           <CodeBlock
-            code={`# Environment variables
-env = XCURSOR_SIZE,24
-env = LIBVA_DRIVER_NAME,nvidia
-env = XDG_SESSION_TYPE,wayland
-env = GBM_BACKEND,nvidia-drm
-env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-env = WLR_NO_HARDWARE_CURSORS,1`}
-            filename=".config/hypr/hyprland.conf"
+            code={`env = QT_QPA_PLATFORM, wayland
+env = QT_QPA_PLATFORMTHEME,qt5ct
+env = GDK_BACKEND,wayland,x11`}
+            filename=".config/hypr/hyprland/env/default.conf"
+            showLineNumbers={true}
+          />
+        </div>
+        <h2>And this for nvidia:</h2>
+        <div className="w-full overflow-x-auto">
+          <CodeBlock
+            code={`env = QT_QPA_PLATFORM, wayland
+env = QT_QPA_PLATFORMTHEME,qt5ct
+env = GDK_BACKEND,wayland,x11`}
+            filename=".config/hypr/hyprland/env/nvidia.conf"
             showLineNumbers={true}
           />
         </div>
@@ -271,12 +277,9 @@ env = WLR_NO_HARDWARE_CURSORS,1`}
         </h2>
         <p className="w-full">Here are some tips for customizing your Hyprland configuration:</p>
         <ul className="mt-4 space-y-2 list-disc list-inside text-muted-foreground w-full">
-          <li>Adjust <code>gaps_in</code> and <code>gaps_out</code> to create your preferred spacing between windows</li>
-          <li>Customize <code>col.active_border</code> with your favorite colors to personalize the active window appearance</li>
           <li>Modify <code>workspace_swipe_fingers</code> based on your touchpad gesture preferences</li>
           <li>Set <code>kb_layout</code> to match your keyboard layout (e.g., "de" for German, "fr" for French)</li>
           <li>Enable or disable <code>natural_scroll</code> based on your scrolling preference</li>
-          <li>Adjust <code>border_size</code> to make window borders more or less prominent</li>
         </ul>
       </div>
 
@@ -341,10 +344,7 @@ env = WLR_NO_HARDWARE_CURSORS,1`}
         </p>
         <ol className="list-decimal pl-5 space-y-1 mt-2">
           <li>
-            Copy the base configuration structure to <code className="bg-muted rounded p-1">~/.config/hypr/</code>
-          </li>
-          <li>
-            Edit the main <code className="bg-muted rounded p-1">hyprland.conf</code> file to source your preferred component configurations
+            Edit the user Prefrences file configuration in <code className="bg-muted rounded p-1">~/.config/hypr/hyprland/userPrefs.conf</code> this will overwrite hyprluna's hyprland configurations
           </li>
           <li>
             Modify individual component files as needed for your hardware and preferences

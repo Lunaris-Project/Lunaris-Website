@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { SearchIcon, FileText, Terminal, Package, Settings } from "lucide-react"
+import { SearchIcon, FileText, Terminal, Package, Settings, FileSearch } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -12,82 +12,17 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
-
-interface SearchResult {
-  title: string
-  href: string
-  type: "docs" | "config" | "command" | "api"
-  description: string
-}
-
-const searchData: SearchResult[] = [
-  {
-    title: "Installation Guide",
-    href: "/docs/main-dots/installation",
-    type: "docs",
-    description: "How to install HyprLuna dotfiles",
-  },
-  {
-    title: "Main Dots Overview",
-    href: "/docs/main-dots",
-    type: "docs",
-    description: "Overview of the HyprLuna dotfiles",
-  },
-  {
-    title: "Hyprland Configuration",
-    href: "/docs/main-dots/configuration",
-    type: "config",
-    description: "Configure Hyprland window manager",
-  },
-  {
-    title: "Waybar Setup",
-    href: "/docs/main-dots/waybar",
-    type: "config",
-    description: "Customize your Waybar status bar",
-  },
-  {
-    title: "Lunarfetch Overview",
-    href: "/docs/lunarfetch",
-    type: "docs",
-    description: "System information display tool",
-  },
-  {
-    title: "Lunarfetch API Reference",
-    href: "/docs/lunarfetch/api-reference",
-    type: "api",
-    description: "API documentation for Lunarfetch",
-  },
-  {
-    title: "Keybindings",
-    href: "/docs/main-dots/keybindings",
-    type: "docs",
-    description: "Keyboard shortcuts for Hyprland",
-  },
-  {
-    title: "Theme Customization",
-    href: "/docs/main-dots/themes",
-    type: "config",
-    description: "Customize the appearance of your desktop",
-  },
-  {
-    title: "FAQ",
-    href: "/docs/advanced/troubleshooting",
-    type: "docs",
-    description: "Common issues and solutions",
-  },
-  {
-    title: "Lunarfetch Examples",
-    href: "/docs/lunarfetch/examples",
-    type: "command",
-    description: "Example usage of Lunarfetch",
-  },
-]
+import { searchContent } from "@/lib/search-utils"
+import { SearchResult } from "@/types/search"
 
 export function SearchBar({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [isSearching, setIsSearching] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -103,6 +38,32 @@ export function SearchBar({ className }: { className?: string }) {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
+  // Search when query changes
+  useEffect(() => {
+    const performSearch = async () => {
+      if (query.length >= 2) {
+        setIsSearching(true)
+        try {
+          const results = await searchContent(query)
+          setSearchResults(results)
+        } catch (error) {
+          console.error("Error searching:", error)
+          setSearchResults([])
+        } finally {
+          setIsSearching(false)
+        }
+      } else {
+        setSearchResults([])
+      }
+    }
+
+    const debounce = setTimeout(() => {
+      performSearch()
+    }, 300)
+
+    return () => clearTimeout(debounce)
+  }, [query])
+
   const handleSelect = (result: SearchResult) => {
     setOpen(false)
     router.push(result.href)
@@ -112,6 +73,13 @@ export function SearchBar({ className }: { className?: string }) {
     setOpen(true)
   }
 
+  // Group results by type for better organization
+  const docsResults = searchResults.filter(item => item.type === "docs")
+  const configResults = searchResults.filter(item => item.type === "config")
+  const apiResults = searchResults.filter(item => item.type === "api")
+  const commandResults = searchResults.filter(item => item.type === "command")
+  const contentResults = searchResults.filter(item => item.type === "content")
+
   return (
     <>
       <div className={cn("relative w-full", className)}>
@@ -119,35 +87,112 @@ export function SearchBar({ className }: { className?: string }) {
         <Input
           ref={inputRef}
           type="search"
-          placeholder="Search documentation... (⌘K)"
+          placeholder="Search anything... (⌘K)"
           className="w-full appearance-none bg-background pl-8 pr-4 shadow-none"
           onClick={handleInputClick}
         />
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search documentation..." value={query} onValueChange={setQuery} />
+        <CommandInput
+          placeholder="Search anything..."
+          value={query}
+          onValueChange={setQuery}
+        />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Documentation">
-            {searchData
-              .filter(
-                (item) =>
-                  item.title.toLowerCase().includes(query.toLowerCase()) ||
-                  item.description.toLowerCase().includes(query.toLowerCase()),
-              )
-              .map((result) => (
-                <CommandItem key={result.href} onSelect={() => handleSelect(result)} className="flex items-center">
-                  {result.type === "docs" && <FileText className="mr-2 h-4 w-4 flex-shrink-0" />}
-                  {result.type === "config" && <Settings className="mr-2 h-4 w-4 flex-shrink-0" />}
-                  {result.type === "command" && <Terminal className="mr-2 h-4 w-4 flex-shrink-0" />}
-                  {result.type === "api" && <Package className="mr-2 h-4 w-4 flex-shrink-0" />}
+          <CommandEmpty>
+            {isSearching ? "Searching..." : "No results found."}
+          </CommandEmpty>
+
+          {/* Documentation results */}
+          {docsResults.length > 0 && (
+            <CommandGroup heading="Documentation">
+              {docsResults.map((result, index) => (
+                <CommandItem key={`docs-${index}`} onSelect={() => handleSelect(result)} className="flex items-center">
+                  <FileText className="mr-2 h-4 w-4 flex-shrink-0" />
                   <div className="overflow-hidden">
                     <p className="font-medium truncate">{result.title}</p>
                     <p className="text-sm text-muted-foreground truncate">{result.description}</p>
                   </div>
                 </CommandItem>
               ))}
-          </CommandGroup>
+            </CommandGroup>
+          )}
+
+          {/* Configuration results */}
+          {configResults.length > 0 && (
+            <>
+              {docsResults.length > 0 && <CommandSeparator />}
+              <CommandGroup heading="Configuration">
+                {configResults.map((result, index) => (
+                  <CommandItem key={`config-${index}`} onSelect={() => handleSelect(result)} className="flex items-center">
+                    <Settings className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-medium truncate">{result.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">{result.description}</p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
+
+          {/* API results */}
+          {apiResults.length > 0 && (
+            <>
+              {(docsResults.length > 0 || configResults.length > 0) && <CommandSeparator />}
+              <CommandGroup heading="API Reference">
+                {apiResults.map((result, index) => (
+                  <CommandItem key={`api-${index}`} onSelect={() => handleSelect(result)} className="flex items-center">
+                    <Package className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-medium truncate">{result.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">{result.description}</p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
+
+          {/* Command results */}
+          {commandResults.length > 0 && (
+            <>
+              {(docsResults.length > 0 || configResults.length > 0 || apiResults.length > 0) && <CommandSeparator />}
+              <CommandGroup heading="Commands">
+                {commandResults.map((result, index) => (
+                  <CommandItem key={`command-${index}`} onSelect={() => handleSelect(result)} className="flex items-center">
+                    <Terminal className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-medium truncate">{result.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">{result.description}</p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
+
+          {/* Content results */}
+          {contentResults.length > 0 && (
+            <>
+              {(docsResults.length > 0 || configResults.length > 0 || apiResults.length > 0 || commandResults.length > 0) && <CommandSeparator />}
+              <CommandGroup heading="Content">
+                {contentResults.map((result, index) => (
+                  <CommandItem key={`content-${index}`} onSelect={() => handleSelect(result)} className="flex items-center">
+                    <FileSearch className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-medium truncate">{result.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {result.content && result.content.length > 60
+                          ? `${result.content.substring(0, 60)}...`
+                          : result.content}
+                      </p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
         </CommandList>
       </CommandDialog>
     </>

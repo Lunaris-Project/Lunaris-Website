@@ -15,7 +15,7 @@ export default function FeaturesPage() {
 
       <div className="space-y-4">
         <h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight" id="window-management">
-          Window Management
+          Overall Management
         </h2>
         <p>
           HyprLuna provides a powerful and intuitive window management system that makes it easy to organize your
@@ -39,6 +39,24 @@ export default function FeaturesPage() {
             <h3 className="text-lg font-medium mt-3">Multi-Monitor Support</h3>
             <p className="text-sm text-muted-foreground mt-1">
               Seamless multi-monitor setup with intelligent workspace management and per-monitor configurations.
+            </p>
+          </div>
+          <div className="rounded-lg border p-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Monitor className="h-5 w-5" />
+            </div>
+            <h3 className="text-lg font-medium mt-3">Hyprland Easy-Controlling</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Don't waste your time and control hyprland configuration with our easy to use side panels.
+            </p>
+          </div>
+          <div className="rounded-lg border p-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Monitor className="h-5 w-5" />
+            </div>
+            <h3 className="text-lg font-medium mt-3">AGS customizablility</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Dont waste your time and force your self to use any static pre configured set of modules, just use our user friendly settings app!
             </p>
           </div>
         </div>
@@ -65,6 +83,12 @@ export default function FeaturesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
+              <tr>
+                  <td className="py-2 font-mono text-sm">
+                    <code>SUPER + /</code>
+                  </td>
+                  <td className="py-2">Launch CheatSheet</td>
+                </tr>
                 <tr>
                   <td className="py-2 font-mono text-sm">
                     <code>SUPER + T</code>
@@ -116,10 +140,9 @@ export default function FeaturesPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Palette className="h-5 w-5" />
             </div>
-            <h3 className="text-lg font-medium mt-3">Themes</h3>
+            <h3 className="text-lg font-medium mt-3">Auto Theming</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Light, dark and by wallpaper themes with consistent styling across applications and automatic theme switching based on
-              time of day and your wallpaper.
+              Night stars, Morning Sun or auto coloring with our Apps wide matugen auto theming Support to give your system touch of Beauty synced with your Wallpaper.
             </p>
           </div>
           <div className="rounded-lg border p-6">
@@ -130,6 +153,15 @@ export default function FeaturesPage() {
             <p className="text-sm text-muted-foreground mt-1">
               Smooth animations for window transitions, workspace switching, and other interactions that enhance the
               user experience.
+            </p>
+          </div>
+          <div className="rounded-lg border p-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Zap className="h-5 w-5" />
+            </div>
+            <h3 className="text-lg font-medium mt-3">Decorations</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Modern decorations for windows and widgets that give modern and cool user experience.
             </p>
           </div>
         </div>
@@ -179,7 +211,7 @@ export default function FeaturesPage() {
           <Link
             href="/docs/main-dots/configuration"
             className="rounded-lg border p-4 hover:bg-muted/50 transition-colors"
-          >
+            >
             <h3 className="text-lg font-medium">Configuration</h3>
             <p className="text-sm text-muted-foreground mt-1">Learn how to configure HyprLuna to your liking.</p>
           </Link>
